@@ -4,7 +4,9 @@ Hello World Streamlit Application
 A minimal Streamlit application that displays a "Hello World" message
 with environment-based configuration support.
 """
+
 import streamlit as st
+
 from config import config
 
 # Configure page
@@ -14,21 +16,22 @@ st.set_page_config(
     layout="centered",
 )
 
+
 # Main application
 def main():
     """Main application function."""
     # Display header
     st.title("👋 Hello World!")
-    
+
     # Display application name from configuration
     st.subheader(config.app_name)
-    
+
     # Display environment information
     st.write(f"**Environment:** {config.environment.upper()}")
-    
+
     # Display a welcome message
     st.write("Welcome to the Hello World Streamlit application!")
-    
+
     # Environment-specific message
     if config.is_development:
         st.info("🔧 Running in Development mode")

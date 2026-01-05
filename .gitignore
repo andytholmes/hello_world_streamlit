@@ -46,6 +46,9 @@ ENV/
 .coverage
 htmlcov/
 .tox/
+*.cover
+.hypothesis/
+.ruff_cache/
 
 # Streamlit
 .streamlit/
