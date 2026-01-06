@@ -1,0 +1,171 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+env:
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  # Continuous Integration: Lint and Test
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install production dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install development dependencies
+        run: |
+          pip install -r requirements-dev.txt
+
+      - name: Run linting with ruff
+        run: |
+          ruff check .
+
+      - name: Check code formatting with ruff
+        run: |
+          ruff format --check .
+
+      - name: Run unit tests with pytest
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  # Continuous Deployment: Deploy to UAT (on merge to develop)
+  deploy-uat:
+    name: Deploy to UAT
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.event.before != '0000000000000000000000000000000000000000'
+    environment:
+      name: uat
+      url: ${{ steps.deploy.outputs.app-url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Create deployment package
+        run: |
+          zip -r app.zip . -x "*.git*" -x "*__pycache__*" -x "*.pytest_cache*" -x "*htmlcov*" -x "*.ruff_cache*"
+
+      - name: Deploy to Azure App Service (UAT)
+        id: deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_APP_SERVICE_UAT }}
+          package: ./app.zip
+
+      - name: Configure startup command
+        run: |
+          az webapp config set \
+            --name ${{ secrets.AZURE_APP_SERVICE_UAT }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --startup-file "streamlit run app.py --server.port=8000 --server.address=0.0.0.0"
+
+      - name: Set environment variables
+        run: |
+          az webapp config appsettings set \
+            --name ${{ secrets.AZURE_APP_SERVICE_UAT }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --settings \
+              ENVIRONMENT=uat \
+              APP_NAME="Hello World Streamlit (UAT)" \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=true
+
+  # Continuous Deployment: Deploy to Production (on merge to main)
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.before != '0000000000000000000000000000000000000000'
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.app-url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Create deployment package
+        run: |
+          zip -r app.zip . -x "*.git*" -x "*__pycache__*" -x "*.pytest_cache*" -x "*htmlcov*" -x "*.ruff_cache*"
+
+      - name: Deploy to Azure App Service (Production)
+        id: deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }}
+          package: ./app.zip
+
+      - name: Configure startup command
+        run: |
+          az webapp config set \
+            --name ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --startup-file "streamlit run app.py --server.port=8000 --server.address=0.0.0.0"
+
+      - name: Set environment variables
+        run: |
+          az webapp config appsettings set \
+            --name ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --settings \
+              ENVIRONMENT=production \
+              APP_NAME="Hello World Streamlit" \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=true
