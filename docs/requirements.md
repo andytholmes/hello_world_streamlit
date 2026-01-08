@@ -82,7 +82,8 @@ hello-world-streamlit/
 │   └── workflows/
 │       └── ci-cd.yml
 ├── README.md
-└── requirements.md
+└── docs/
+    └── requirements.md
 ```
 
 ---

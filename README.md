@@ -87,9 +87,10 @@ hello-world-streamlit/
 │   └── test_app.py            # Unit tests
 ├── .gitignore                  # Git ignore rules
 ├── README.md                   # This file
-├── ARCHITECTURE.md             # Architecture documentation
-├── IMPLEMENTATION_PLAN.md      # Implementation plan
-└── requirements.md             # Requirements document
+└── docs/                       # Documentation
+    ├── ARCHITECTURE.md         # Architecture documentation
+    ├── IMPLEMENTATION_PLAN.md  # Implementation plan
+    └── requirements.md         # Requirements document
 ```
 
 ## Development
@@ -194,13 +195,15 @@ The application is deployed to Azure App Service:
 - **UAT**: `hello-world-streamlit-uat`
 - **Production**: `hello-world-streamlit-prod`
 
-See `ARCHITECTURE.md` for detailed deployment architecture.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed deployment architecture.
 
 ## Documentation
 
-- [Requirements](requirements.md) - Functional and non-functional requirements
-- [Architecture](ARCHITECTURE.md) - Technical architecture and design decisions
-- [Implementation Plan](IMPLEMENTATION_PLAN.md) - Detailed implementation phases
+- [Requirements](docs/requirements.md) - Functional and non-functional requirements
+- [Architecture](docs/ARCHITECTURE.md) - Technical architecture and design decisions
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) - Detailed implementation phases
+- [Azure Setup Guide](docs/AZURE_SETUP.md) - Azure resource and credentials setup
+- [Testing Deployment](docs/TESTING_DEPLOYMENT.md) - How to test the deployment pipeline
 
 ## Contributing
 

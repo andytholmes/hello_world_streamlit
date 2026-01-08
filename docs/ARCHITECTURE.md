@@ -304,8 +304,9 @@ hello-world-streamlit/
 ├── .gitignore                  # Git ignore rules
 ├── .ruff.toml                  # Ruff configuration (optional)
 ├── README.md                   # Project documentation
-├── ARCHITECTURE.md             # This document
-└── requirements.md             # Requirements document
+└── docs/                       # Documentation
+    ├── ARCHITECTURE.md         # This document
+    └── requirements.md         # Requirements document
 ```
 
 ---
