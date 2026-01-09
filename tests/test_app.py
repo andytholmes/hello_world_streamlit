@@ -158,6 +158,7 @@ class TestApplication:
         monkeypatch.delenv("GIT_COMMIT", raising=False)
         # Mock the VERSION file to not exist
         import os
+
         original_join = os.path.join
 
         def mock_join(*args):
