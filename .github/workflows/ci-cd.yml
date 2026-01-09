@@ -77,6 +77,22 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Verify required secrets are set
+        run: |
+          if [ -z "${{ secrets.AZURE_CREDENTIALS_UAT }}" ]; then
+            echo "Error: AZURE_CREDENTIALS_UAT secret is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.AZURE_RESOURCE_GROUP_UAT }}" ]; then
+            echo "Error: AZURE_RESOURCE_GROUP_UAT secret is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.AZURE_APP_SERVICE_UAT }}" ]; then
+            echo "Error: AZURE_APP_SERVICE_UAT secret is not set"
+            exit 1
+          fi
+          echo "✓ All required secrets are set"
+
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -120,19 +136,20 @@ jobs:
         with:
           app-name: ${{ secrets.AZURE_APP_SERVICE_UAT }}
           package: ./app.zip
+          resource-group: ${{ secrets.AZURE_RESOURCE_GROUP_UAT }}
 
       - name: Configure startup command
         run: |
           az webapp config set \
-            --name ${{ secrets.AZURE_APP_SERVICE_UAT }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_UAT }} \
+            --name "${{ secrets.AZURE_APP_SERVICE_UAT }}" \
+            --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_UAT }}" \
             --startup-file "streamlit run app.py --server.port=8000 --server.address=0.0.0.0"
 
       - name: Set environment variables
         run: |
           az webapp config appsettings set \
-            --name ${{ secrets.AZURE_APP_SERVICE_UAT }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_UAT }} \
+            --name "${{ secrets.AZURE_APP_SERVICE_UAT }}" \
+            --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_UAT }}" \
             --settings \
               ENVIRONMENT=uat \
               APP_NAME="Hello World Streamlit (UAT)" \
@@ -160,6 +177,22 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Verify required secrets are set
+        run: |
+          if [ -z "${{ secrets.AZURE_CREDENTIALS_PRODUCTION }}" ]; then
+            echo "Error: AZURE_CREDENTIALS_PRODUCTION secret is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }}" ]; then
+            echo "Error: AZURE_RESOURCE_GROUP_PRODUCTION secret is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.AZURE_APP_SERVICE_PRODUCTION }}" ]; then
+            echo "Error: AZURE_APP_SERVICE_PRODUCTION secret is not set"
+            exit 1
+          fi
+          echo "✓ All required secrets are set"
 
       - name: Azure Login
         uses: azure/login@v2
@@ -204,19 +237,20 @@ jobs:
         with:
           app-name: ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }}
           package: ./app.zip
+          resource-group: ${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }}
 
       - name: Configure startup command
         run: |
           az webapp config set \
-            --name ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }} \
+            --name "${{ secrets.AZURE_APP_SERVICE_PRODUCTION }}" \
+            --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }}" \
             --startup-file "streamlit run app.py --server.port=8000 --server.address=0.0.0.0"
 
       - name: Set environment variables
         run: |
           az webapp config appsettings set \
-            --name ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }} \
+            --name "${{ secrets.AZURE_APP_SERVICE_PRODUCTION }}" \
+            --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }}" \
             --settings \
               ENVIRONMENT=production \
               APP_NAME="Hello World Streamlit" \
