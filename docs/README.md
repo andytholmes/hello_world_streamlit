@@ -17,6 +17,7 @@ This directory contains all project documentation.
 
 ### Testing & Deployment
 - **[TESTING_DEPLOYMENT.md](TESTING_DEPLOYMENT.md)** - Guide for testing the CI/CD deployment pipeline
+- **[PRODUCTION_DEPLOYMENT.md](PRODUCTION_DEPLOYMENT.md)** - How to deploy from UAT to Production
 
 ## Quick Links
 
@@ -31,5 +32,6 @@ This directory contains all project documentation.
 3. If you encounter credential errors: [FIX_AZURE_CREDENTIALS.md](FIX_AZURE_CREDENTIALS.md)
 4. For SKU selection: [AZURE_SKU_GUIDE.md](AZURE_SKU_GUIDE.md)
 
-### Testing Deployment
+### Testing & Deploying
 - See [TESTING_DEPLOYMENT.md](TESTING_DEPLOYMENT.md) for testing your CI/CD pipeline
+- See [PRODUCTION_DEPLOYMENT.md](PRODUCTION_DEPLOYMENT.md) for deploying to production

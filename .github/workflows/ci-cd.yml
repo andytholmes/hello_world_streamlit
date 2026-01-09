@@ -86,6 +86,30 @@ jobs:
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
+      - name: Get version and commit info
+        id: version
+        run: |
+          # Get git commit SHA
+          GIT_COMMIT_FULL="${{ github.sha }}"
+          GIT_COMMIT_SHORT=$(echo "$GIT_COMMIT_FULL" | cut -c1-7)
+          
+          # Generate version: use VERSION file if it exists, otherwise use semantic version from date + commit
+          if [ -f VERSION ]; then
+            BASE_VERSION=$(cat VERSION | tr -d '[:space:]')
+          else
+            # Generate version from date: YYYY.MM.DD
+            BASE_VERSION=$(date +'%Y.%m.%d')
+          fi
+          
+          # Create full version: BASE_VERSION-COMMIT_SHORT (e.g., 1.0.0-a1b2c3d)
+          VERSION="${BASE_VERSION}-${GIT_COMMIT_SHORT}"
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "git_commit=$GIT_COMMIT_FULL" >> $GITHUB_OUTPUT
+          echo "github_repo=${{ github.server_url }}/${{ github.repository }}" >> $GITHUB_OUTPUT
+          echo "Git commit: $GIT_COMMIT_FULL"
+          echo "Version: $VERSION"
+
       - name: Create deployment package
         run: |
           zip -r app.zip . -x "*.git*" -x "*__pycache__*" -x "*.pytest_cache*" -x "*htmlcov*" -x "*.ruff_cache*"
@@ -112,6 +136,10 @@ jobs:
             --settings \
               ENVIRONMENT=uat \
               APP_NAME="Hello World Streamlit (UAT)" \
+              VERSION="${{ steps.version.outputs.version }}" \
+              GIT_COMMIT="${{ steps.version.outputs.git_commit }}" \
+              GITHUB_REPO="${{ steps.version.outputs.github_repo }}" \
+              WEBSITES_PORT=8000 \
               SCM_DO_BUILD_DURING_DEPLOYMENT=true
 
   # Continuous Deployment: Deploy to Production (on merge to main)
@@ -142,6 +170,30 @@ jobs:
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
+      - name: Get version and commit info
+        id: version
+        run: |
+          # Get git commit SHA
+          GIT_COMMIT_FULL="${{ github.sha }}"
+          GIT_COMMIT_SHORT=$(echo "$GIT_COMMIT_FULL" | cut -c1-7)
+          
+          # Generate version: use VERSION file if it exists, otherwise use semantic version from date + commit
+          if [ -f VERSION ]; then
+            BASE_VERSION=$(cat VERSION | tr -d '[:space:]')
+          else
+            # Generate version from date: YYYY.MM.DD
+            BASE_VERSION=$(date +'%Y.%m.%d')
+          fi
+          
+          # Create full version: BASE_VERSION-COMMIT_SHORT (e.g., 1.0.0-a1b2c3d)
+          VERSION="${BASE_VERSION}-${GIT_COMMIT_SHORT}"
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "git_commit=$GIT_COMMIT_FULL" >> $GITHUB_OUTPUT
+          echo "github_repo=${{ github.server_url }}/${{ github.repository }}" >> $GITHUB_OUTPUT
+          echo "Git commit: $GIT_COMMIT_FULL"
+          echo "Version: $VERSION"
+
       - name: Create deployment package
         run: |
           zip -r app.zip . -x "*.git*" -x "*__pycache__*" -x "*.pytest_cache*" -x "*htmlcov*" -x "*.ruff_cache*"
@@ -168,4 +220,8 @@ jobs:
             --settings \
               ENVIRONMENT=production \
               APP_NAME="Hello World Streamlit" \
+              VERSION="${{ steps.version.outputs.version }}" \
+              GIT_COMMIT="${{ steps.version.outputs.git_commit }}" \
+              GITHUB_REPO="${{ steps.version.outputs.github_repo }}" \
+              WEBSITES_PORT=8000 \
               SCM_DO_BUILD_DURING_DEPLOYMENT=true
