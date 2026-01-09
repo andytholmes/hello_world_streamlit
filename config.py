@@ -59,11 +59,11 @@ def get_version() -> str:
     # Try reading from VERSION file
     try:
         version_file = os.path.join(os.path.dirname(__file__), "VERSION")
-        with open(version_file, "r", encoding="utf-8") as f:
+        with open(version_file, encoding="utf-8") as f:
             version = f.read().strip()
         if version:
             return version
-    except (FileNotFoundError, IOError):
+    except (OSError, FileNotFoundError):
         pass
 
     return "dev"

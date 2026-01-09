@@ -25,18 +25,26 @@ def _display_version_footer():
         # Add spacing and small text at the bottom
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("---")
-        
+
         version_parts = []
         if config.version:
             version_parts.append(f"**Version:** {config.version}")
-        
+
         if config.commit_url and config.git_commit:
-            commit_short = config.git_commit[:7] if len(config.git_commit) >= 7 else config.git_commit
+            commit_short = (
+                config.git_commit[:7]
+                if len(config.git_commit) >= 7
+                else config.git_commit
+            )
             version_parts.append(f"**Commit:** [{commit_short}]({config.commit_url})")
         elif config.git_commit:
-            commit_short = config.git_commit[:7] if len(config.git_commit) >= 7 else config.git_commit
+            commit_short = (
+                config.git_commit[:7]
+                if len(config.git_commit) >= 7
+                else config.git_commit
+            )
             version_parts.append(f"**Commit:** {commit_short}")
-        
+
         if version_parts:
             # Use caption for small, unobtrusive text
             footer_text = " | ".join(version_parts)
