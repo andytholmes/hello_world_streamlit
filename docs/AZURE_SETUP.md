@@ -1,6 +1,27 @@
 # Azure Credentials Setup Guide
 
-This guide will help you fix the Azure credentials issue in your GitHub Actions workflow.
+This guide will help you set up Azure credentials for your GitHub Actions workflow with **segregated environments** for security and isolation.
+
+## Architecture Overview
+
+The Azure setup uses **separate resource groups and service principals** for UAT and Production environments:
+
+- **UAT Environment:**
+  - Resource Group: `rg-hello-world-streamlit-uat`
+  - Service Principal: `github-actions-hello-world-streamlit-uat`
+  - Role: **Contributor** (read/write access)
+  - Used for: Development, testing, and UAT deployments
+
+- **Production Environment:**
+  - Resource Group: `rg-hello-world-streamlit-prod`
+  - Service Principal: `github-actions-hello-world-streamlit-prod`
+  - Role: **Reader** (read-only access)
+  - Used for: Production monitoring and read-only operations
+
+This segregation ensures that:
+- UAT deployments have full control over the UAT environment
+- Production is protected with read-only access
+- Environments are completely isolated at the resource group level
 
 ## Quick Start (Complete Setup)
 
@@ -11,7 +32,7 @@ If you're starting from scratch, follow these steps in order:
    ./scripts/create-azure-resources.sh
    ```
 
-2. **Create Azure Service Principal**:
+2. **Create Azure Service Principals**:
    ```bash
    ./scripts/setup-azure-credentials.sh
    ```
@@ -38,9 +59,9 @@ Run the automated script to create all necessary Azure resources:
 ```
 
 This script will:
-1. Create a Resource Group
-2. Create an App Service Plan
-3. Create UAT and Production App Services
+1. Create **separate Resource Groups** for UAT and Production
+2. Create **separate App Service Plans** for each environment
+3. Create UAT and Production App Services in their respective resource groups
 4. Configure them with the correct settings (Python 3.10, startup command, etc.)
 
 ### Option 2: Manual Resource Creation
@@ -59,8 +80,10 @@ Run the automated setup script:
 
 This script will:
 1. Verify you're logged into Azure
-2. Create a Service Principal with the correct permissions
-3. Output the credentials in the format needed for GitHub Actions
+2. Create **two separate Service Principals**:
+   - UAT: Contributor role (read/write) on UAT resource group
+   - Production: Reader role (read-only) on Production resource group
+3. Output both sets of credentials in the format needed for GitHub Actions
 4. Guide you through adding them to GitHub
 
 ## Manual Setup
@@ -73,39 +96,57 @@ If you prefer to set up manually:
 az login
 ```
 
-### Step 2: Get Your Subscription and Resource Group Info
+### Step 2: Get Your Subscription Info
 
 ```bash
 # Get subscription ID
 az account show --query id -o tsv
 
-# List resource groups (if you have one)
+# List resource groups
 az group list --query "[].name" -o table
 ```
 
-### Step 3: Create Service Principal
+### Step 3: Create Resource Groups (if they don't exist)
 
-Replace `<subscription-id>` and `<resource-group-name>` with your values:
+```bash
+# Create UAT resource group
+az group create \
+  --name rg-hello-world-streamlit-uat \
+  --location eastus
+
+# Create Production resource group
+az group create \
+  --name rg-hello-world-streamlit-prod \
+  --location eastus
+```
+
+### Step 4: Create UAT Service Principal (Contributor - Read/Write)
+
+Replace `<subscription-id>` with your subscription ID:
 
 ```bash
 az ad sp create-for-rbac \
-  --name "github-actions-hello-world-streamlit" \
+  --name "github-actions-hello-world-streamlit-uat" \
   --role contributor \
-  --scopes /subscriptions/<subscription-id>/resourceGroups/<resource-group-name> \
+  --scopes /subscriptions/<subscription-id>/resourceGroups/rg-hello-world-streamlit-uat \
   --sdk-auth
 ```
 
-**Important:** If your resource group doesn't exist yet, you can use the subscription scope instead:
+This will output JSON credentials. **Save this output!** This is your UAT credentials.
+
+### Step 5: Create Production Service Principal (Reader - Read-Only)
 
 ```bash
 az ad sp create-for-rbac \
-  --name "github-actions-hello-world-streamlit" \
-  --role contributor \
-  --scopes /subscriptions/<subscription-id> \
+  --name "github-actions-hello-world-streamlit-prod" \
+  --role reader \
+  --scopes /subscriptions/<subscription-id>/resourceGroups/rg-hello-world-streamlit-prod \
   --sdk-auth
 ```
 
-This will output JSON credentials. **Save this output!** It looks like:
+This will output JSON credentials. **Save this output!** This is your Production credentials.
+
+Both JSON outputs will look like:
 
 ```json
 {
@@ -122,45 +163,57 @@ This will output JSON credentials. **Save this output!** It looks like:
 }
 ```
 
-### Step 4: Add Credentials to GitHub Secrets
+### Step 6: Add Credentials to GitHub Secrets
 
 1. Go to your repository settings:
    ```
    https://github.com/andytholmes/hello_world_streamlit/settings/secrets/actions
    ```
 
-2. Click **"New repository secret"**
+2. Click **"New repository secret"** and add the following secrets:
 
-3. Add the following secrets:
+   **Secret 1: AZURE_CREDENTIALS_UAT**
+   - Name: `AZURE_CREDENTIALS_UAT`
+   - Value: Paste the **entire JSON output** from Step 4 (UAT credentials)
 
-   **Secret 1: AZURE_CREDENTIALS**
-   - Name: `AZURE_CREDENTIALS`
-   - Value: Paste the **entire JSON output** from Step 3 (all of it, as one string)
+   **Secret 2: AZURE_CREDENTIALS_PRODUCTION**
+   - Name: `AZURE_CREDENTIALS_PRODUCTION`
+   - Value: Paste the **entire JSON output** from Step 5 (Production credentials)
 
-   **Secret 2: AZURE_RESOURCE_GROUP**
-   - Name: `AZURE_RESOURCE_GROUP`
-   - Value: Your resource group name (e.g., `rg-hello-world-streamlit`)
+   **Secret 3: AZURE_RESOURCE_GROUP_UAT**
+   - Name: `AZURE_RESOURCE_GROUP_UAT`
+   - Value: `rg-hello-world-streamlit-uat`
 
-   **Secret 3: AZURE_APP_SERVICE_UAT**
+   **Secret 4: AZURE_RESOURCE_GROUP_PRODUCTION**
+   - Name: `AZURE_RESOURCE_GROUP_PRODUCTION`
+   - Value: `rg-hello-world-streamlit-prod`
+
+   **Secret 5: AZURE_APP_SERVICE_UAT**
    - Name: `AZURE_APP_SERVICE_UAT`
    - Value: Your UAT App Service name (e.g., `hello-world-streamlit-uat`)
 
-   **Secret 4: AZURE_APP_SERVICE_PRODUCTION**
+   **Secret 6: AZURE_APP_SERVICE_PRODUCTION**
    - Name: `AZURE_APP_SERVICE_PRODUCTION`
    - Value: Your Production App Service name (e.g., `hello-world-streamlit-prod`)
 
-### Step 5: Verify Azure Resources Exist
+### Step 7: Verify Azure Resources Exist
 
 **⚠️ If you haven't created the App Services yet, do that first using the script above or manually.**
 
-Verify your App Services and Resource Group exist:
+Verify your App Services and Resource Groups exist:
 
 ```bash
-# Check if resource group exists
-az group show --name <resource-group-name>
+# Check UAT resource group
+az group show --name rg-hello-world-streamlit-uat
 
-# List app services in the resource group
-az webapp list --resource-group <resource-group-name> --query "[].{name:name, state:state}" -o table
+# Check Production resource group
+az group show --name rg-hello-world-streamlit-prod
+
+# List app services in UAT resource group
+az webapp list --resource-group rg-hello-world-streamlit-uat --query "[].{name:name, state:state}" -o table
+
+# List app services in Production resource group
+az webapp list --resource-group rg-hello-world-streamlit-prod --query "[].{name:name, state:state}" -o table
 ```
 
 If they don't exist:
@@ -186,28 +239,41 @@ The service principal wasn't created properly. Try:
 
 ### Error: "Authorization failed"
 
-The service principal doesn't have the right permissions:
+The service principal doesn't have the right permissions. Verify and fix:
+
 ```bash
-# Grant Contributor role on resource group
+# For UAT - Grant Contributor role
 az role assignment create \
-  --assignee <clientId-from-credentials> \
+  --assignee <uat-clientId-from-credentials> \
   --role "Contributor" \
-  --scope /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>
+  --scope /subscriptions/<subscription-id>/resourceGroups/rg-hello-world-streamlit-uat
+
+# For Production - Grant Reader role
+az role assignment create \
+  --assignee <prod-clientId-from-credentials> \
+  --role "Reader" \
+  --scope /subscriptions/<subscription-id>/resourceGroups/rg-hello-world-streamlit-prod
 ```
 
 ### Error: "Resource group not found"
 
 Ensure:
-- The resource group exists in Azure
-- The `AZURE_RESOURCE_GROUP` secret matches the actual name exactly
-- The service principal has permissions on that resource group
+- Both resource groups exist in Azure (UAT and Production)
+- The `AZURE_RESOURCE_GROUP_UAT` and `AZURE_RESOURCE_GROUP_PRODUCTION` secrets match the actual names exactly
+- The service principals have permissions on their respective resource groups
 
 ### Verify Service Principal Permissions
 
 ```bash
-# List role assignments for a resource group
+# List role assignments for UAT resource group
 az role assignment list \
-  --resource-group <resource-group-name> \
+  --resource-group rg-hello-world-streamlit-uat \
+  --query "[].{principalName:principalName, roleDefinitionName:roleDefinitionName}" \
+  -o table
+
+# List role assignments for Production resource group
+az role assignment list \
+  --resource-group rg-hello-world-streamlit-prod \
   --query "[].{principalName:principalName, roleDefinitionName:roleDefinitionName}" \
   -o table
 ```
@@ -224,7 +290,20 @@ Use these values when creating the service principal.
 
 ## Security Notes
 
-- ⚠️ **Never commit** the `azure-credentials.json` file to git
-- ⚠️ The `clientSecret` is only shown once - save it immediately
+- ⚠️ **Never commit** credential files (`azure-credentials-*.json`) to git
+- ⚠️ The `clientSecret` values are only shown once - save them immediately
 - ✅ The credentials are stored securely in GitHub Secrets
-- ✅ Rotate credentials periodically (create a new service principal and update the secret)
+- ✅ Rotate credentials periodically (create new service principals and update the secrets)
+- ✅ **Environment Segregation**: UAT and Production are completely isolated with separate resource groups
+- ✅ **Principle of Least Privilege**: Production service principal has read-only access
+- ✅ **Separate Service Principals**: Each environment has its own service principal for better security and auditability
+
+## Architecture Benefits
+
+The segregated architecture provides:
+
+1. **Security Isolation**: Production resources cannot be accidentally modified from UAT workflows
+2. **Access Control**: Different permission levels (read/write for UAT, read-only for Production)
+3. **Audit Trail**: Separate service principals make it easier to track which environment was accessed
+4. **Resource Management**: Separate resource groups allow independent lifecycle management
+5. **Compliance**: Better alignment with security best practices and compliance requirements
