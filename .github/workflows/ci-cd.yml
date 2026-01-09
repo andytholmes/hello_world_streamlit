@@ -80,7 +80,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS_UAT }}
 
       - name: Install Azure CLI
         run: |
@@ -125,14 +125,14 @@ jobs:
         run: |
           az webapp config set \
             --name ${{ secrets.AZURE_APP_SERVICE_UAT }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_UAT }} \
             --startup-file "streamlit run app.py --server.port=8000 --server.address=0.0.0.0"
 
       - name: Set environment variables
         run: |
           az webapp config appsettings set \
             --name ${{ secrets.AZURE_APP_SERVICE_UAT }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_UAT }} \
             --settings \
               ENVIRONMENT=uat \
               APP_NAME="Hello World Streamlit (UAT)" \
@@ -164,7 +164,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }}
 
       - name: Install Azure CLI
         run: |
@@ -209,14 +209,14 @@ jobs:
         run: |
           az webapp config set \
             --name ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }} \
             --startup-file "streamlit run app.py --server.port=8000 --server.address=0.0.0.0"
 
       - name: Set environment variables
         run: |
           az webapp config appsettings set \
             --name ${{ secrets.AZURE_APP_SERVICE_PRODUCTION }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_PRODUCTION }} \
             --settings \
               ENVIRONMENT=production \
               APP_NAME="Hello World Streamlit" \
