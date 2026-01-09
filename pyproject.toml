@@ -1,0 +1,19 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+]
+# Don't collect tests from these paths
+norecursedirs = [".git", ".pytest_cache", "__pycache__", "htmlcov", ".ruff_cache"]
+
+[tool.ruff]
+# Ruff configuration is in .ruff.toml

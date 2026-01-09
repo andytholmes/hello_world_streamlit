@@ -1,3 +1,5 @@
+# Install with: python -m pip install -r requirements-dev.txt
+
 pytest>=7.4.0
 ruff>=0.1.0
 pytest-cov>=4.1.0

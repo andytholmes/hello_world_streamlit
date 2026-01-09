@@ -30,7 +30,9 @@ ENV/
 .venv
 
 # IDE
-.vscode/
+# Keep .vscode/settings.json for team consistency, but ignore other IDE files
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -46,6 +48,9 @@ ENV/
 .coverage
 htmlcov/
 .tox/
+*.cover
+.hypothesis/
+.ruff_cache/
 
 # Streamlit
 .streamlit/
@@ -57,3 +62,7 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Azure credentials (if saved locally)
+azure-credentials.json
+*.azure-credentials.json

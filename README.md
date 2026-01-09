@@ -87,9 +87,10 @@ hello-world-streamlit/
 │   └── test_app.py            # Unit tests
 ├── .gitignore                  # Git ignore rules
 ├── README.md                   # This file
-├── ARCHITECTURE.md             # Architecture documentation
-├── IMPLEMENTATION_PLAN.md      # Implementation plan
-└── requirements.md             # Requirements document
+└── docs/                       # Documentation
+    ├── ARCHITECTURE.md         # Architecture documentation
+    ├── IMPLEMENTATION_PLAN.md  # Implementation plan
+    └── requirements.md         # Requirements document
 ```
 
 ## Development
@@ -133,12 +134,23 @@ This project uses a lightweight GitFlow-style branching strategy:
 
 2. Make your changes and test locally:
    ```bash
+   # Run pre-push checks (recommended before every push)
+   ./scripts/pre-push-checks.sh
+   
+   # Or run checks individually:
    pytest
    ruff check .
+   ruff format --check .
    streamlit run app.py
    ```
 
-3. Commit and push:
+3. **Before pushing, always run CI checks locally:**
+   ```bash
+   # This ensures GitHub Actions will pass
+   ./scripts/pre-push-checks.sh
+   ```
+
+4. Commit and push:
    ```bash
    git add .
    git commit -m "Your commit message"
@@ -194,13 +206,15 @@ The application is deployed to Azure App Service:
 - **UAT**: `hello-world-streamlit-uat`
 - **Production**: `hello-world-streamlit-prod`
 
-See `ARCHITECTURE.md` for detailed deployment architecture.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed deployment architecture.
 
 ## Documentation
 
-- [Requirements](requirements.md) - Functional and non-functional requirements
-- [Architecture](ARCHITECTURE.md) - Technical architecture and design decisions
-- [Implementation Plan](IMPLEMENTATION_PLAN.md) - Detailed implementation phases
+- [Requirements](docs/requirements.md) - Functional and non-functional requirements
+- [Architecture](docs/ARCHITECTURE.md) - Technical architecture and design decisions
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) - Detailed implementation phases
+- [Azure Setup Guide](docs/AZURE_SETUP.md) - Azure resource and credentials setup
+- [Testing Deployment](docs/TESTING_DEPLOYMENT.md) - How to test the deployment pipeline
 
 ## Contributing
 
