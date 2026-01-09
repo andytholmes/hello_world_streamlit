@@ -111,7 +111,9 @@ class Config:
         if self.github_repo and self.git_commit:
             # Remove .git suffix if present (use endswith check, not rstrip)
             repo_url = (
-                self.github_repo[:-4] if self.github_repo.endswith(".git") else self.github_repo
+                self.github_repo[:-4]
+                if self.github_repo.endswith(".git")
+                else self.github_repo
             )
             return f"{repo_url}/commit/{self.git_commit}"
         return ""
