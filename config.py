@@ -64,6 +64,8 @@ def get_version() -> str:
         if version:
             return version
     except (OSError, FileNotFoundError):
+        # If the VERSION file is missing or unreadable, fall back to the default
+        # "dev" version returned below.
         pass
 
     return "dev"
