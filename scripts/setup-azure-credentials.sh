@@ -186,7 +186,6 @@ echo "  - UAT Service Principal: Contributor role (read/write) on UAT resource g
 echo "  - Production Service Principal: Reader role (read-only) on Production resource group"
 echo "  - Environments are fully segregated with separate resource groups"
 echo ""
-    
 # Save to file for reference (optional)
 read -p "Save credentials to files for reference? (y/n): " SAVE_FILE
 if [ "$SAVE_FILE" == "y" ]; then
