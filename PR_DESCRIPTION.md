@@ -40,7 +40,6 @@ This PR merges all completed implementation phases from `develop` to `main`, mar
 - Automated resource creation scripts:
   - `create-azure-resources.sh` - Creates segregated Azure resources
   - `setup-azure-credentials.sh` - Creates separate service principals
-  - `fix-azure-credentials.sh` - Troubleshooting and credential regeneration
 - Updated CI/CD workflow to use segregated credentials
 - Comprehensive Azure setup documentation
 
@@ -75,7 +74,6 @@ This PR merges all completed implementation phases from `develop` to `main`, mar
 - `scripts/pre-push-checks.sh` - Local validation script
 - `scripts/create-azure-resources.sh` - Azure resource creation automation
 - `scripts/setup-azure-credentials.sh` - Service principal setup automation
-- `scripts/fix-azure-credentials.sh` - Credential troubleshooting tool
 
 ### Files Modified
 - `.github/workflows/ci-cd.yml` - Updated for segregated Azure credentials

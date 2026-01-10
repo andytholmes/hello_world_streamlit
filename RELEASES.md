@@ -171,7 +171,6 @@ This initial release includes a production-ready Streamlit application with comp
 - **Automated Resource Creation Scripts**
   - `scripts/create-azure-resources.sh` - Creates segregated Azure resources
   - `scripts/setup-azure-credentials.sh` - Creates separate service principals
-  - `scripts/fix-azure-credentials.sh` - Regenerates credentials for troubleshooting
   - Interactive prompts with sensible defaults
   - Validation and error checking
 
