@@ -34,8 +34,9 @@ This PR merges all completed implementation phases from `develop` to `main`, mar
 - **Security-focused architecture**:
   - Separate service principals per environment
   - UAT: Contributor role (read/write access)
-  - Production: Reader role (read-only access) - principle of least privilege
+  - Production: Contributor role (read/write access)
   - Complete environment isolation
+  - Independent deployment capabilities for each environment
 - Automated resource creation scripts:
   - `create-azure-resources.sh` - Creates segregated Azure resources
   - `setup-azure-credentials.sh` - Creates separate service principals
@@ -48,10 +49,10 @@ This PR merges all completed implementation phases from `develop` to `main`, mar
 ### Security & Best Practices
 - ✅ Environment segregation with separate resource groups
 - ✅ Role-based access control (RBAC) implementation
-- ✅ Principle of least privilege for production access
 - ✅ Separate service principals for audit trail
 - ✅ No secrets committed to repository
 - ✅ Comprehensive secret validation
+- ✅ Independent deployment capabilities per environment
 
 ### Code Quality
 - ✅ 90% test coverage
@@ -110,7 +111,7 @@ This PR merges all completed implementation phases from `develop` to `main`, mar
 - `AZURE_APP_SERVICE_UAT` - UAT app service name
 
 **Production Environment:**
-- `AZURE_CREDENTIALS_PRODUCTION` - Production service principal JSON (Reader role)
+- `AZURE_CREDENTIALS_PRODUCTION` - Production service principal JSON (Contributor role)
 - `AZURE_RESOURCE_GROUP_PRODUCTION` - Production resource group name
 - `AZURE_APP_SERVICE_PRODUCTION` - Production app service name
 

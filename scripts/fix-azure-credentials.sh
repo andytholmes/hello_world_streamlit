@@ -145,7 +145,7 @@ if [ "$PROD_EXISTS" = true ]; then
     echo "Production Service Principal"
     echo "=========================================="
     SCOPE_PROD="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_PROD"
-    CREDENTIALS_PROD=$(create_or_reset_sp "$SP_NAME_PROD" "$SCOPE_PROD" "reader" "Production")
+    CREDENTIALS_PROD=$(create_or_reset_sp "$SP_NAME_PROD" "$SCOPE_PROD" "contributor" "Production")
     echo ""
 fi
 

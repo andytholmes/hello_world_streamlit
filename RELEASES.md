@@ -163,10 +163,10 @@ This initial release includes a production-ready Streamlit application with comp
     - Role: **Contributor** (read/write access)
     - Scope: UAT resource group only
   - Production Service Principal: `github-actions-hello-world-streamlit-prod`
-    - Role: **Reader** (read-only access)
+    - Role: **Contributor** (read/write access)
     - Scope: Production resource group only
-  - Principle of least privilege implemented
   - Separate credentials for each environment
+  - Environments fully isolated with independent deployment capabilities
 
 - **Automated Resource Creation Scripts**
   - `scripts/create-azure-resources.sh` - Creates segregated Azure resources
@@ -192,9 +192,9 @@ This initial release includes a production-ready Streamlit application with comp
 
 - ✅ Environment segregation with separate resource groups
 - ✅ Role-based access control (RBAC)
-- ✅ Principle of least privilege (read-only for Production)
 - ✅ Separate service principals per environment
 - ✅ Clear audit trail with environment-specific identities
+- ✅ Independent deployment capabilities for each environment
 
 #### Deliverables
 
@@ -258,7 +258,7 @@ This initial release includes a production-ready Streamlit application with comp
 3. `AZURE_APP_SERVICE_UAT` - UAT app service name
 
 ### Production Environment
-1. `AZURE_CREDENTIALS_PRODUCTION` - Production service principal JSON (Reader role)
+1. `AZURE_CREDENTIALS_PRODUCTION` - Production service principal JSON (Contributor role)
 2. `AZURE_RESOURCE_GROUP_PRODUCTION` - Production resource group name
 3. `AZURE_APP_SERVICE_PRODUCTION` - Production app service name
 

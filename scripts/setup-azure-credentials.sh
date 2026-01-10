@@ -104,16 +104,16 @@ fi
 
 echo ""
 
-# Create Production Service Principal (Reader role - read-only)
+# Create Production Service Principal (Contributor role - read/write)
 echo -e "${BLUE}Creating Production Service Principal...${NC}"
 echo "   Name: $SP_NAME_PROD"
 echo "   Scope: /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_PROD"
-echo "   Role: Reader (read-only access)"
+echo "   Role: Contributor (read/write access)"
 echo ""
 
 CREDENTIALS_PROD=$(az ad sp create-for-rbac \
     --name "$SP_NAME_PROD" \
-    --role reader \
+    --role contributor \
     --scopes "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_PROD" \
     --sdk-auth \
     2>&1)
@@ -183,7 +183,7 @@ echo "=========================================="
 echo ""
 echo "Security Notes:"
 echo "  - UAT Service Principal: Contributor role (read/write) on UAT resource group"
-echo "  - Production Service Principal: Reader role (read-only) on Production resource group"
+echo "  - Production Service Principal: Contributor role (read/write) on Production resource group"
 echo "  - Environments are fully segregated with separate resource groups"
 echo ""
 # Save to file for reference (optional)

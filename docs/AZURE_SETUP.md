@@ -15,12 +15,12 @@ The Azure setup uses **separate resource groups and service principals** for UAT
 - **Production Environment:**
   - Resource Group: `rg-hello-world-streamlit-prod`
   - Service Principal: `github-actions-hello-world-streamlit-prod`
-  - Role: **Reader** (read-only access)
-  - Used for: Production monitoring and read-only operations
+  - Role: **Contributor** (read/write access)
+  - Used for: Production deployments and management
 
 This segregation ensures that:
 - UAT deployments have full control over the UAT environment
-- Production is protected with read-only access
+- Production deployments have full control over the Production environment
 - Environments are completely isolated at the resource group level
 
 ## Quick Start (Complete Setup)
@@ -82,7 +82,7 @@ This script will:
 1. Verify you're logged into Azure
 2. Create **two separate Service Principals**:
    - UAT: Contributor role (read/write) on UAT resource group
-   - Production: Reader role (read-only) on Production resource group
+   - Production: Contributor role (read/write) on Production resource group
 3. Output both sets of credentials in the format needed for GitHub Actions
 4. Guide you through adding them to GitHub
 
@@ -134,12 +134,12 @@ az ad sp create-for-rbac \
 
 This will output JSON credentials. **Save this output!** This is your UAT credentials.
 
-### Step 5: Create Production Service Principal (Reader - Read-Only)
+### Step 5: Create Production Service Principal (Contributor - Read/Write)
 
 ```bash
 az ad sp create-for-rbac \
   --name "github-actions-hello-world-streamlit-prod" \
-  --role reader \
+  --role contributor \
   --scopes /subscriptions/<subscription-id>/resourceGroups/rg-hello-world-streamlit-prod \
   --sdk-auth
 ```
@@ -248,10 +248,10 @@ az role assignment create \
   --role "Contributor" \
   --scope /subscriptions/<subscription-id>/resourceGroups/rg-hello-world-streamlit-uat
 
-# For Production - Grant Reader role
+# For Production - Grant Contributor role
 az role assignment create \
   --assignee <prod-clientId-from-credentials> \
-  --role "Reader" \
+  --role "Contributor" \
   --scope /subscriptions/<subscription-id>/resourceGroups/rg-hello-world-streamlit-prod
 ```
 
@@ -295,8 +295,8 @@ Use these values when creating the service principal.
 - ✅ The credentials are stored securely in GitHub Secrets
 - ✅ Rotate credentials periodically (create new service principals and update the secrets)
 - ✅ **Environment Segregation**: UAT and Production are completely isolated with separate resource groups
-- ✅ **Principle of Least Privilege**: Production service principal has read-only access
 - ✅ **Separate Service Principals**: Each environment has its own service principal for better security and auditability
+- ✅ **Independent Deployment**: Each environment has full control for deployments and management
 
 ## Architecture Benefits
 
