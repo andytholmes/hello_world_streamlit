@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Azure Credentials Setup Script for GitHub Actions
-# This script creates separate service principals for UAT (read/write) and Production (read-only)
+# This script creates separate service principals for UAT (read/write) and Production (read/write)
 # with segregated resource groups for security and isolation
 
 set -e

@@ -76,34 +76,36 @@ create_or_reset_sp() {
     local ROLE=$3
     local ENV_NAME=$4
     
-    echo -e "${BLUE}Processing $ENV_NAME Service Principal...${NC}"
+    # Redirect all diagnostic output to stderr so it doesn't get captured in command substitution
+    echo -e "${BLUE}Processing $ENV_NAME Service Principal...${NC}" >&2
     
     EXISTING_SP=$(az ad sp list --display-name "$SP_NAME" --query "[0].appId" -o tsv 2>/dev/null || echo "")
     
     if [ -n "$EXISTING_SP" ]; then
-        echo -e "${YELLOW}⚠${NC} Service Principal '$SP_NAME' already exists"
-        echo "   App ID: $EXISTING_SP"
-        echo ""
-        read -p "Delete existing service principal and create a new one? (y/n): " DELETE_SP
+        echo -e "${YELLOW}⚠${NC} Service Principal '$SP_NAME' already exists" >&2
+        echo "   App ID: $EXISTING_SP" >&2
+        echo "" >&2
+        echo -n "Delete existing service principal and create a new one? (y/n): " >&2
+        read DELETE_SP
         if [ "$DELETE_SP" == "y" ]; then
-            echo "Deleting existing service principal..."
+            echo "Deleting existing service principal..." >&2
             SP_ID=$(az ad sp list --display-name "$SP_NAME" --query "[0].id" -o tsv)
-            az ad sp delete --id "$SP_ID" 2>/dev/null || echo "Service principal deleted or already removed"
-            echo -e "${GREEN}✓${NC} Old service principal deleted"
-            echo ""
-            # Create new
+            az ad sp delete --id "$SP_ID" 2>/dev/null || echo "Service principal deleted or already removed" >&2
+            echo -e "${GREEN}✓${NC} Old service principal deleted" >&2
+            echo "" >&2
+            # Create new - output only JSON to stdout
             az ad sp create-for-rbac \
                 --name "$SP_NAME" \
                 --role "$ROLE" \
                 --scopes "$SCOPE" \
-                --sdk-auth
+                --sdk-auth 2>&1
         else
             # Reset password for existing SP
-            echo "Resetting password for existing service principal..."
+            echo "Resetting password for existing service principal..." >&2
             NEW_PASSWORD=$(az ad sp credential reset --id "$EXISTING_SP" --query password -o tsv)
             CLIENT_ID="$EXISTING_SP"
             
-            # Construct JSON manually
+            # Construct JSON manually - output only JSON to stdout
             cat <<EOF
 {
   "clientId": "$CLIENT_ID",
@@ -120,12 +122,12 @@ create_or_reset_sp() {
 EOF
         fi
     else
-        # Create new
+        # Create new - output only JSON to stdout
         az ad sp create-for-rbac \
             --name "$SP_NAME" \
             --role "$ROLE" \
             --scopes "$SCOPE" \
-            --sdk-auth
+            --sdk-auth 2>&1
     fi
 }
 

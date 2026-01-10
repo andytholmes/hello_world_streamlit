@@ -303,7 +303,7 @@ Use these values when creating the service principal.
 The segregated architecture provides:
 
 1. **Security Isolation**: Production resources cannot be accidentally modified from UAT workflows
-2. **Access Control**: Different permission levels (read/write for UAT, read-only for Production)
+2. **Access Control**: Both environments have Contributor role (read/write access) for deployments
 3. **Audit Trail**: Separate service principals make it easier to track which environment was accessed
 4. **Resource Management**: Separate resource groups allow independent lifecycle management
 5. **Compliance**: Better alignment with security best practices and compliance requirements
