@@ -12,7 +12,6 @@ This directory contains all project documentation.
 ### Azure Deployment & Setup
 - **[AZURE_SETUP.md](AZURE_SETUP.md)** - Complete guide for setting up Azure resources and credentials
 - **[FIX_AZURE_CREDENTIALS.md](FIX_AZURE_CREDENTIALS.md)** - Troubleshooting guide for Azure credential errors
-- **[AZURE_QUOTA_FIX.md](AZURE_QUOTA_FIX.md)** - Guide for resolving Azure quota issues
 - **[AZURE_SKU_GUIDE.md](AZURE_SKU_GUIDE.md)** - Explanation of Azure App Service Plan SKUs
 
 ### Testing & Deployment
@@ -28,9 +27,8 @@ This directory contains all project documentation.
 
 ### Setting Up Azure
 1. Read [AZURE_SETUP.md](AZURE_SETUP.md) for the complete setup process
-2. If you encounter quota issues: [AZURE_QUOTA_FIX.md](AZURE_QUOTA_FIX.md)
-3. If you encounter credential errors: [FIX_AZURE_CREDENTIALS.md](FIX_AZURE_CREDENTIALS.md)
-4. For SKU selection: [AZURE_SKU_GUIDE.md](AZURE_SKU_GUIDE.md)
+2. If you encounter credential errors: [FIX_AZURE_CREDENTIALS.md](FIX_AZURE_CREDENTIALS.md)
+3. For SKU selection: [AZURE_SKU_GUIDE.md](AZURE_SKU_GUIDE.md)
 
 ### Testing & Deploying
 - See [TESTING_DEPLOYMENT.md](TESTING_DEPLOYMENT.md) for testing your CI/CD pipeline
