@@ -23,11 +23,11 @@ This implementation plan outlines the step-by-step approach to building, testing
 | Phase 1: Project Setup & Initial Development | ✅ Completed | 2024-01-05 |
 | Phase 2: Testing & Quality Assurance | ✅ Completed | 2024-01-05 |
 | Phase 3: CI/CD Pipeline Development | ✅ Completed | 2024-01-05 |
-| Phase 4: Azure Infrastructure Setup | ⏳ Pending | - |
+| Phase 4: Azure Infrastructure Setup | ✅ Partially Completed | 2025-01-09 |
 | Phase 5: Integration & Deployment | ⏳ Pending | - |
 | Phase 6: Documentation & Handover | ⏳ Pending | - |
 
-**Overall Progress**: 3 of 6 phases completed (50%)
+**Overall Progress**: 3.5 of 6 phases completed (58%)
 
 ---
 
@@ -48,9 +48,10 @@ This implementation plan outlines the step-by-step approach to building, testing
 **Objective**: Build and configure GitHub Actions CI/CD pipeline  
 **Status**: ✅ Completed on 2024-01-05
 
-### Phase 4: Azure Infrastructure Setup
+### Phase 4: Azure Infrastructure Setup ✅ **PARTIALLY COMPLETED**
 **Duration**: 2-3 days  
-**Objective**: Provision and configure Azure App Services for UAT and Production
+**Objective**: Provision and configure Azure App Services for UAT and Production  
+**Status**: ✅ Partially Completed on 2025-01-09 - Core infrastructure architecture and automation scripts completed
 
 ### Phase 5: Integration & Deployment
 **Duration**: 2-3 days  
@@ -203,35 +204,63 @@ This implementation plan outlines the step-by-step approach to building, testing
 
 ## Phase 4: Azure Infrastructure Setup
 
+**Status**: ✅ Partially Completed on 2025-01-09
+
 ### 4.1 Tasks
 
-| Task ID | Task Description | Owner | Estimated Time | Dependencies |
-|---------|------------------|-------|----------------|--------------|
-| 4.1.1 | Create Azure Resource Group | DevOps | 15 min | None |
-| 4.1.2 | Create Azure App Service Plan (Linux, Python runtime) | DevOps | 30 min | 4.1.1 |
-| 4.1.3 | Create UAT App Service instance | DevOps | 30 min | 4.1.2 |
-| 4.1.4 | Configure UAT App Service: Runtime, startup command, port | DevOps | 1 hour | 4.1.3 |
-| 4.1.5 | Set UAT environment variables in App Service configuration | DevOps | 30 min | 4.1.4 |
-| 4.1.6 | Create Production App Service instance | DevOps | 30 min | 4.1.2 |
-| 4.1.7 | Configure Production App Service: Runtime, startup command, port | DevOps | 1 hour | 4.1.6 |
-| 4.1.8 | Set Production environment variables in App Service configuration | DevOps | 30 min | 4.1.7 |
-| 4.1.9 | Configure HTTPS/TLS for both App Services | DevOps | 30 min | 4.1.5, 4.1.8 |
-| 4.1.10 | Test manual deployment to UAT App Service | DevOps/Developer | 1 hour | 4.1.5 |
-| 4.1.11 | Test manual deployment to Production App Service | DevOps/Developer | 1 hour | 4.1.8 |
+| Task ID | Task Description | Owner | Estimated Time | Dependencies | Status |
+|---------|------------------|-------|----------------|--------------|--------|
+| 4.1.1 | Create Azure Resource Groups (separate for UAT and Production) | DevOps | 15 min | None | ✅ Completed |
+| 4.1.2 | Create Azure App Service Plans (separate for each environment) | DevOps | 30 min | 4.1.1 | ✅ Completed (automated) |
+| 4.1.3 | Create UAT App Service instance | DevOps | 30 min | 4.1.2 | ✅ Completed (automated) |
+| 4.1.4 | Configure UAT App Service: Runtime, startup command, port | DevOps | 1 hour | 4.1.3 | ✅ Completed (automated) |
+| 4.1.5 | Set UAT environment variables in App Service configuration | DevOps | 30 min | 4.1.4 | ✅ Completed (automated) |
+| 4.1.6 | Create Production App Service instance | DevOps | 30 min | 4.1.2 | ✅ Completed (automated) |
+| 4.1.7 | Configure Production App Service: Runtime, startup command, port | DevOps | 1 hour | 4.1.6 | ✅ Completed (automated) |
+| 4.1.8 | Set Production environment variables in App Service configuration | DevOps | 30 min | 4.1.7 | ✅ Completed (automated) |
+| 4.1.9 | Create separate Service Principals for UAT and Production | DevOps | 1 hour | 4.1.1 | ✅ Completed |
+| 4.1.10 | Configure CI/CD workflow for segregated credentials | Developer | 1 hour | 4.1.9 | ✅ Completed |
+| 4.1.11 | Create automated resource creation scripts | Developer | 2 hours | None | ✅ Completed |
+| 4.1.12 | Configure HTTPS/TLS for both App Services | DevOps | 30 min | 4.1.5, 4.1.8 | ⏳ Pending |
+| 4.1.13 | Test manual deployment to UAT App Service | DevOps/Developer | 1 hour | 4.1.5 | ⏳ Pending |
+| 4.1.14 | Test manual deployment to Production App Service | DevOps/Developer | 1 hour | 4.1.8 | ⏳ Pending |
 
 ### 4.2 Deliverables
-- ✅ Azure Resource Group created
-- ✅ UAT App Service provisioned and configured
-- ✅ Production App Service provisioned and configured
-- ✅ Environment variables configured per environment
-- ✅ HTTPS enabled on both App Services
-- ✅ Manual deployment validated
+- ✅ Segregated Azure Resource Groups created (separate for UAT and Production)
+- ✅ Separate App Service Plans for each environment
+- ✅ UAT App Service provisioned and configured (automated via script)
+- ✅ Production App Service provisioned and configured (automated via script)
+- ✅ Environment variables configured per environment (automated)
+- ✅ Separate Service Principals with Contributor roles for each environment
+- ✅ Automated resource creation script (`create-azure-resources.sh`)
+- ✅ Automated service principal setup script (`setup-azure-credentials.sh`)
+- ✅ CI/CD workflow updated for segregated credentials
+- ✅ Comprehensive Azure setup documentation (`docs/AZURE_SETUP.md`)
+- ⏳ HTTPS/TLS configuration (pending manual step)
+- ⏳ Manual deployment validation (pending)
 
 ### 4.3 Acceptance Criteria
-- Both App Services accessible via HTTPS
-- Application runs correctly on both environments
-- Environment-specific configuration working
-- Service Principal has necessary permissions
+- ✅ Separate resource groups for UAT and Production
+- ✅ Separate service principals with appropriate permissions (Contributor role)
+- ✅ Automated scripts for resource and credential creation
+- ✅ CI/CD workflow configured for segregated environments
+- ✅ Complete documentation for Azure setup
+- ⏳ Both App Services accessible via HTTPS (pending)
+- ⏳ Application runs correctly on both environments (pending validation)
+- ⏳ Environment-specific configuration working (configured, pending validation)
+- ⏳ Service Principals have necessary permissions (configured)
+
+### 4.4 Completion Notes
+- ✅ Implemented segregated architecture with separate resource groups and service principals
+- ✅ Created automated scripts for resource creation (`scripts/create-azure-resources.sh`)
+- ✅ Created automated script for service principal setup (`scripts/setup-azure-credentials.sh`)
+- ✅ Updated CI/CD workflow to use segregated credentials (`AZURE_CREDENTIALS_UAT`, `AZURE_CREDENTIALS_PRODUCTION`)
+- ✅ Both UAT and Production service principals configured with Contributor role (read/write access)
+- ✅ Complete environment isolation at the resource group level
+- ✅ Comprehensive documentation updated in `docs/AZURE_SETUP.md`
+- ✅ Workflow includes secret validation to catch configuration issues early
+- ✅ Fixed workflow deployment conditions to prevent deployment on branch creation
+- ⏳ Remaining manual steps: HTTPS/TLS configuration, manual deployment validation
 
 ---
 
@@ -444,6 +473,7 @@ az webapp create --name hello-world-uat --resource-group rg-hello-world --plan p
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2025-01-09 | Development Team | Updated Phase 4 status to partially completed, documented segregated architecture, automated scripts, and service principals |
 | 1.3 | 2024-01-05 | Development Team | Updated Phase 3 status to completed |
 | 1.2 | 2024-01-05 | Development Team | Updated Phase 2 status to completed |
 | 1.1 | 2024-01-05 | Development Team | Updated Phase 1 status to completed |
